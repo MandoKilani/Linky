@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "QRCode": {
+      "title": "QRCode",
+      "description": "A customized and saved QR code with scan tracking and expiration.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique ID of the QR code." },
+        "shortId": { "type": "string", "description": "A short ID used for the redirect URL." },
+        "name": { "type": "string", "description": "The name given to this QR code by the user." },
+        "originalUrl": { "type": "string", "description": "The destination URL." },
+        "expiresAt": { "type": "string", "format": "date-time", "description": "Optional expiration date." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "The creation timestamp." },
+        "ownerId": { "type": "string", "description": "The UID of the user who created this QR code." },
+        "scans": { "type": "integer", "description": "The number of redirects/scans." },
+        "config": {
+          "type": "object",
+          "description": "The visual configuration of the QR code.",
+          "properties": {
+            "fgColor": { "type": "string" },
+            "fgColor2": { "type": "string" },
+            "bgColor": { "type": "string" },
+            "isGradient": { "type": "boolean" },
+            "gradientType": { "type": "string" },
+            "gradientRotation": { "type": "number" },
+            "dotsType": { "type": "string" },
+            "cornersType": { "type": "string" },
+            "logo": { "type": "string" },
+            "logoSize": { "type": "number" }
+          }
+        }
+      },
+      "required": ["id", "shortId", "originalUrl", "createdAt", "ownerId", "config"]
+    }
+  },
+  "firestore": {
+    "/qr_codes/{qrId}": {
+      "schema": "QRCode",
+      "description": "Collection of saved QR codes."
+    }
+  }
+}

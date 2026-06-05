@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    match /qr_codes/{qrId} {
+      // Anyone can read a QR code (for the redirect logic)
+      allow get: if true;
+      
+      // Only owners can list their QR codes
+      allow list: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      
+      // Only owners can create/update/delete their QR codes
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      
+      allow update: if (
+        (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['scans']) &&
+         request.resource.data.scans == resource.data.get('scans', 0) + 1)
+      );
+      
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+  }
+}
